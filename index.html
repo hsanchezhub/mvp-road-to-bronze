@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>How to Become the MVP — Road to Bronze</title>
+<meta name="description" content="The blueprint to become the MVP and reach Bronze. A simple duplication system." />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          display: ['Orbitron', 'sans-serif'],
+          body: ['"Exo 2"', 'sans-serif'],
+        },
+        colors: {
+          ink: '#07060A',
+          night: '#0E0B12',
+          bronze: { 100:'#F6D8B5', 300:'#E0A864', 500:'#B87333', 700:'#7A4A1F', 900:'#3A2210' },
+          gold:   { 400:'#F2C76A', 500:'#E0B04A' },
+        },
+        boxShadow: {
+          glow: '0 0 40px -10px rgba(224,168,100,0.45)',
+          inset: 'inset 0 1px 0 0 rgba(255,255,255,0.06)',
+        },
+      },
+    },
+  };
+</script>
+<style>
+  html { background:#07060A; }
+  body { background: transparent; color:#F5EFE6; font-family:'Exo 2', sans-serif; overflow-x:hidden; }
+
+  /* ======================================================
+     GLOBAL AMBIENT BACKGROUND — site-wide neural haze.
+     Fixed behind all content. Subtle, slow.
+     ====================================================== */
+  .site-bg {
+    position:fixed; inset:0; z-index:-1; pointer-events:none; overflow:hidden;
+    background:
+      radial-gradient(60% 50% at 20% 10%, rgba(184,115,51,0.10), transparent 60%),
+      radial-gradient(50% 40% at 90% 30%, rgba(224,168,100,0.08), transparent 60%),
+      radial-gradient(70% 50% at 40% 90%, rgba(122,74,31,0.10), transparent 60%),
+      #07060A;
+  }
+  .site-bg-canvas { position:absolute; inset:0; width:100%; height:100%; opacity:.7; }
+  .site-bg-glow {
+    position:absolute; border-radius:9999px; filter:blur(100px); opacity:.4;
+  }
+  .site-bg-glow.a { width:520px; height:520px; background:#B87333; top:-100px;  left:-80px;
+    animation: sbgDrift1 28s ease-in-out infinite alternate; }
+  .site-bg-glow.b { width:600px; height:600px; background:#E0A864; top:40%; right:-150px;
+    animation: sbgDrift2 36s ease-in-out infinite alternate; }
+  .site-bg-glow.c { width:700px; height:700px; background:#7A4A1F; bottom:-200px; left:30%;
+    animation: sbgDrift3 44s ease-in-out infinite alternate; }
+  @keyframes sbgDrift1 { from{ transform:translate3d(0,0,0);} to{ transform:translate3d(60px,80px,0);} }
+  @keyframes sbgDrift2 { from{ transform:translate3d(0,0,0);} to{ transform:translate3d(-80px,-60px,0);} }
+  @keyframes sbgDrift3 { from{ transform:translate3d(0,0,0);} to{ transform:translate3d(50px,-80px,0);} }
+  .site-bg-vignette {
+    position:absolute; inset:0;
+    background: radial-gradient(100% 80% at 50% 50%, transparent 40%, rgba(7,6,10,0.55) 100%);
+  }
+  .display { font-family:'Orbitron', sans-serif; letter-spacing:0.02em; }
+
+  /* ======================================================
+     NEURAL NETWORK — Hero background.
+     Canvas-driven: nodes + dynamic connections + traveling signals.
+     ====================================================== */
+  .liquid-stage {
+    position:absolute; inset:0; pointer-events:none; overflow:hidden;
+    background:
+      radial-gradient(80% 60% at 50% 30%, #18100E 0%, #0C0709 55%, #07060A 100%);
+  }
+  .neural-canvas { position:absolute; inset:0; width:100%; height:100%; }
+
+  /* Ambient orbs behind canvas for depth */
+  .neural-glow {
+    position:absolute; border-radius:9999px; filter:blur(80px); pointer-events:none;
+  }
+  .neural-glow.g1 { width:420px; height:420px; background:#B87333; opacity:.35; top:10%; left:5%;  animation: driftG1 14s ease-in-out infinite alternate; }
+  .neural-glow.g2 { width:360px; height:360px; background:#E0A864; opacity:.3;  top:40%; right:5%; animation: driftG2 18s ease-in-out infinite alternate; }
+  .neural-glow.g3 { width:480px; height:480px; background:#7A4A1F; opacity:.25; bottom:-100px; left:30%; animation: driftG3 22s ease-in-out infinite alternate; }
+  @keyframes driftG1 { from { transform: translate3d(0,0,0); } to { transform: translate3d(40px,-30px,0); } }
+  @keyframes driftG2 { from { transform: translate3d(0,0,0); } to { transform: translate3d(-50px,40px,0); } }
+  @keyframes driftG3 { from { transform: translate3d(0,0,0); } to { transform: translate3d(30px,-40px,0); } }
+
+  /* Vignette + grain */
+  .liquid-vignette {
+    position:absolute; inset:0; pointer-events:none;
+    background: radial-gradient(90% 75% at 50% 50%, transparent 35%, rgba(7,6,10,0.5) 75%, #07060A 100%);
+  }
+  .liquid-grain {
+    position:absolute; inset:0; pointer-events:none; opacity:.05; mix-blend-mode:overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 0.84  0 0 0 0 0.55  0 0 0 0.6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  /* ======================================================
+     GLASS / BORDERS
+     ====================================================== */
+  .glass {
+    background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+    border: 1px solid rgba(224,168,100,0.18);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    transition: border-color .3s ease, transform .4s cubic-bezier(.2,.7,.2,1), box-shadow .4s ease;
+  }
+  .glass:hover { border-color: rgba(224,168,100,0.45); box-shadow: 0 12px 60px -20px rgba(224,168,100,0.35); }
+
+  /* ======================================================
+     TEXT EFFECTS
+     ====================================================== */
+  .bronze-text {
+    background: linear-gradient(135deg, #F6D8B5 0%, #E0A864 25%, #B87333 50%, #F2C76A 75%, #E0A864 100%);
+    background-size: 300% 100%;
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    animation: shimmer 6s ease-in-out infinite;
+  }
+  @keyframes shimmer {
+    0%,100% { background-position: 0% 50%; }
+    50%     { background-position: 100% 50%; }
+  }
+
+  .bronze-border {
+    background: linear-gradient(#0E0B12,#0E0B12) padding-box,
+                linear-gradient(135deg,#F6D8B5,#B87333,#7A4A1F,#E0A864) border-box;
+    border: 1px solid transparent;
+  }
+
+  .ring-bronze:focus-visible { outline:none; box-shadow: 0 0 0 3px rgba(224,168,100,0.45); }
+
+  .num-chip {
+    background: radial-gradient(circle at 30% 30%, #F6D8B5, #B87333 60%, #3A2210);
+    color:#1A0F05; font-weight:700;
+    box-shadow: 0 4px 20px -4px rgba(224,168,100,0.5), inset 0 1px 0 rgba(255,255,255,0.4);
+  }
+
+  /* ======================================================
+     BRONZE BADGE (Hero hexagon)
+     ====================================================== */
+  .badge-wrap {
+    position: relative; width: 220px; height: 220px;
+    animation: badgeFloat 6s ease-in-out infinite;
+  }
+  @keyframes badgeFloat {
+    0%,100% { transform: translateY(0) rotate(-2deg); }
+    50%     { transform: translateY(-10px) rotate(2deg); }
+  }
+  .badge-glow {
+    position:absolute; inset:-30%; border-radius:9999px; z-index:0;
+    background: radial-gradient(circle, rgba(224,168,100,0.55), transparent 60%);
+    filter: blur(20px); animation: badgePulse 3s ease-in-out infinite;
+  }
+  @keyframes badgePulse {
+    0%,100% { opacity:.55; transform: scale(1); }
+    50%     { opacity:.9;  transform: scale(1.1); }
+  }
+  .badge-ring {
+    position:absolute; inset:0; border-radius:9999px; border:1px dashed rgba(224,168,100,0.5);
+    animation: spinSlow 18s linear infinite;
+  }
+  .badge-ring.inner { inset:12px; border-style:solid; border-color: rgba(224,168,100,0.25); animation: spinSlow 10s linear infinite reverse; }
+  @keyframes spinSlow { to { transform: rotate(360deg); } }
+  .badge-core {
+    position:absolute; inset:24px; border-radius:9999px;
+    background:
+      radial-gradient(circle at 30% 25%, #F6D8B5, #E0A864 35%, #B87333 65%, #3A2210 100%);
+    box-shadow:
+      inset 0 4px 12px rgba(255,255,255,0.35),
+      inset 0 -10px 20px rgba(0,0,0,0.45),
+      0 25px 50px -10px rgba(184,115,51,0.55);
+    display:flex; align-items:center; justify-content:center; flex-direction:column;
+    color:#1A0F05;
+  }
+  .badge-core::before {
+    content:''; position:absolute; inset:0; border-radius:9999px;
+    background: conic-gradient(from 0deg, transparent 0%, rgba(255,255,255,0.4) 12%, transparent 25%, transparent 100%);
+    mix-blend-mode: overlay; animation: spinSlow 5s linear infinite;
+  }
+  .badge-core .label { font-family:'Orbitron', sans-serif; font-weight:900; font-size:24px; letter-spacing:.2em; }
+  .badge-core .sub   { font-family:'Orbitron', sans-serif; font-size:9px; letter-spacing:.4em; margin-top:4px; opacity:.7; }
+  .badge-star {
+    position:absolute; width:6px; height:6px; border-radius:9999px;
+    background:#F6D8B5; box-shadow: 0 0 12px 2px rgba(246,216,181,0.9);
+  }
+  .badge-star.s1 { top:6px; left:50%; transform:translateX(-50%); animation: orbitDot 8s linear infinite; }
+  .badge-star.s2 { bottom:6px; left:50%; transform:translateX(-50%); animation: orbitDot 12s linear infinite reverse; }
+  @keyframes orbitDot { from{transform: rotate(0deg) translateY(-100px);} to{transform: rotate(360deg) translateY(-100px);} }
+
+  /* ======================================================
+     MARQUEE
+     ====================================================== */
+  .marquee-track { animation: scroll 30s linear infinite; }
+  @keyframes scroll { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+  /* ======================================================
+     SPEED SECTION
+     ====================================================== */
+  .speed-stage { position:relative; height: 280px; overflow:hidden; border-radius:24px; }
+  .speed-line {
+    position:absolute; height:2px; left:-20%; width:40%;
+    background: linear-gradient(90deg, transparent, #F6D8B5, transparent);
+    opacity:.7;
+    animation: streak 1.6s linear infinite;
+    filter: drop-shadow(0 0 6px rgba(246,216,181,0.7));
+  }
+  @keyframes streak {
+    from { transform: translateX(0); }
+    to   { transform: translateX(350%); }
+  }
+  .speed-meter {
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  }
+  .speed-meter .ring2 {
+    position:relative; width:200px; height:200px; border-radius:9999px;
+    border:1px solid rgba(224,168,100,0.3);
+    box-shadow: inset 0 0 30px rgba(224,168,100,0.2), 0 0 60px rgba(224,168,100,0.25);
+  }
+  .speed-meter .ring2::before {
+    content:''; position:absolute; inset:-1px; border-radius:9999px;
+    border:2px solid transparent;
+    border-top-color:#F2C76A; border-right-color:#E0A864;
+    animation: spinFast 1.6s linear infinite;
+  }
+  @keyframes spinFast { to { transform: rotate(360deg); } }
+  .speed-num { font-family:'Orbitron',sans-serif; font-weight:800; font-size:42px;
+    background: linear-gradient(135deg,#F6D8B5,#E0A864,#B87333);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+
+  /* ======================================================
+     REVEAL ON SCROLL
+     ====================================================== */
+  .reveal { opacity:0; transform: translateY(40px); transition: opacity .9s cubic-bezier(.2,.7,.2,1), transform .9s cubic-bezier(.2,.7,.2,1); }
+  .reveal.in  { opacity:1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay:.1s; }
+  .reveal-delay-2 { transition-delay:.2s; }
+  .reveal-delay-3 { transition-delay:.3s; }
+  .reveal-delay-4 { transition-delay:.4s; }
+  .reveal-delay-5 { transition-delay:.5s; }
+
+  /* HERO ENTRANCE */
+  .hero-line { opacity:0; transform: translateY(30px); filter: blur(8px); animation: heroIn .9s cubic-bezier(.2,.7,.2,1) forwards; }
+  .hero-line.l2 { animation-delay:.15s; }
+  .hero-line.l3 { animation-delay:.3s; }
+  .hero-sub    { opacity:0; transform: translateY(20px); animation: heroIn 1s ease-out .55s forwards; }
+  .hero-stats  { opacity:0; transform: translateY(30px); animation: heroIn 1s ease-out .75s forwards; }
+  @keyframes heroIn { to { opacity:1; transform: translateY(0); filter: blur(0); } }
+
+  .float-1 { animation: floatA 8s ease-in-out infinite; }
+  .float-2 { animation: floatB 10s ease-in-out infinite; }
+  @keyframes floatA { 0%,100% { transform: translate3d(0,0,0); } 50% { transform: translate3d(0,-10px,0); } }
+  @keyframes floatB { 0%,100% { transform: translate3d(0,0,0) rotate(0deg); } 50% { transform: translate3d(0,8px,0) rotate(2deg); } }
+
+  .pulse-dot { position:relative; }
+  .pulse-dot::after {
+    content:''; position:absolute; inset:-6px; border-radius:9999px;
+    background: rgba(224,168,100,0.4); animation: pulseRing 2s ease-out infinite;
+  }
+  @keyframes pulseRing { 0% { transform:scale(.6); opacity:.6; } 100% { transform:scale(1.8); opacity:0; } }
+
+  .step-card { transition: transform .5s cubic-bezier(.2,.7,.2,1), border-color .3s ease; }
+  .step-card:hover { transform: translateY(-6px); }
+
+  /* LANG VISIBILITY */
+  [data-lang] { display:none; }
+  html[lang="en"] [data-lang="en"] { display:inline; }
+  html[lang="fr"] [data-lang="fr"] { display:inline; }
+  html[lang="nl"] [data-lang="nl"] { display:inline; }
+  html[lang="en"] [data-lang-block="en"] { display:block; }
+  html[lang="fr"] [data-lang-block="fr"] { display:block; }
+  html[lang="nl"] [data-lang-block="nl"] { display:block; }
+  [data-lang-block] { display:none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .reveal { opacity:1; transform:none; }
+  }
+</style>
+</head>
+<body class="font-body antialiased selection:bg-bronze-500/40">
+
+<!-- GLOBAL AMBIENT BG -->
+<div class="site-bg" aria-hidden="true">
+  <div class="site-bg-glow a"></div>
+  <div class="site-bg-glow b"></div>
+  <div class="site-bg-glow c"></div>
+  <canvas id="site-neural" class="site-bg-canvas"></canvas>
+  <div class="site-bg-vignette"></div>
+</div>
+
+<!-- NAV -->
+<header class="fixed top-4 left-4 right-4 z-50">
+  <div class="glass rounded-2xl px-5 py-3 flex items-center justify-between max-w-6xl mx-auto">
+    <a href="#" class="flex items-center gap-2">
+      <span class="w-8 h-8 rounded-lg bronze-border flex items-center justify-center float-1">
+        <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="url(#g1)" stroke-width="2">
+          <defs><linearGradient id="g1" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#F6D8B5"/><stop offset="1" stop-color="#B87333"/></linearGradient></defs>
+          <path d="M12 2 L20 7 L20 17 L12 22 L4 17 L4 7 Z"/>
+        </svg>
+      </span>
+      <span class="display text-sm tracking-widest">MVP<span class="bronze-text">.01</span></span>
+    </a>
+    <nav class="hidden md:flex items-center gap-7 text-sm text-white/70">
+      <a href="#why" class="hover:text-white transition cursor-pointer"><span data-lang="en">Why?</span><span data-lang="fr">Pourquoi ?</span><span data-lang="nl">Waarom?</span></a>
+      <a href="#path" class="hover:text-white transition cursor-pointer"><span data-lang="en">How?</span><span data-lang="fr">Comment ?</span><span data-lang="nl">Hoe?</span></a>
+      <a href="#practice" class="hover:text-white transition cursor-pointer"><span data-lang="en">Practice</span><span data-lang="fr">La Pratique</span><span data-lang="nl">Praktijk</span></a>
+      <a href="#speed" class="hover:text-white transition cursor-pointer"><span data-lang="en">Speed</span><span data-lang="fr">Vitesse</span><span data-lang="nl">Snelheid</span></a>
+      <a href="#bronze" class="hover:text-white transition cursor-pointer"><span data-lang="en">Road to Bronze</span><span data-lang="fr">Vers le Bronze</span><span data-lang="nl">Naar Brons</span></a>
+    </nav>
+    <div class="glass rounded-full p-1 flex text-xs font-medium">
+      <button onclick="setLang('en')" id="btn-en" class="px-3 py-1 rounded-full cursor-pointer transition ring-bronze">EN</button>
+      <button onclick="setLang('fr')" id="btn-fr" class="px-3 py-1 rounded-full cursor-pointer transition ring-bronze">FR</button>
+      <button onclick="setLang('nl')" id="btn-nl" class="px-3 py-1 rounded-full cursor-pointer transition ring-bronze">NL</button>
+    </div>
+  </div>
+</header>
+
+<!-- SVG goo filter (for liquid blobs merging) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="goo">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="22" result="blur"/>
+      <feColorMatrix in="blur" mode="matrix"
+        values="1 0 0 0 0   0 1 0 0 0   0 0 1 0 0   0 0 0 22 -10" result="goo"/>
+      <feBlend in="SourceGraphic" in2="goo"/>
+    </filter>
+  </defs>
+</svg>
+
+<!-- HERO -->
+<section class="relative overflow-hidden pt-40 pb-32">
+  <div class="liquid-stage">
+    <div class="neural-glow g1"></div>
+    <div class="neural-glow g2"></div>
+    <div class="neural-glow g3"></div>
+    <canvas id="neural" class="neural-canvas"></canvas>
+    <div class="liquid-vignette"></div>
+    <div class="liquid-grain"></div>
+  </div>
+
+  <div class="relative max-w-6xl mx-auto px-6">
+    <div class="grid lg:grid-cols-12 gap-12 items-center">
+      <div class="lg:col-span-8">
+        <div class="flex items-center gap-3 mb-8 hero-sub">
+          <span class="glass rounded-full px-3 py-1 text-xs tracking-widest display text-bronze-300">CHAPTER · 01</span>
+          <span class="text-xs text-white/50 tracking-wider"><span data-lang="en">THE MVP PROTOCOL</span><span data-lang="fr">LE PROTOCOLE MVP</span><span data-lang="nl">HET MVP-PROTOCOL</span></span>
+        </div>
+
+        <h1 class="display text-5xl md:text-7xl lg:text-7xl font-bold leading-[0.95]">
+          <span data-lang-block="en">
+            <span class="hero-line block">How to Become</span>
+            <span class="hero-line l2 block">the <span class="bronze-text">MVP</span></span>
+            <span class="hero-line l3 block text-white/60">Road to Bronze.</span>
+          </span>
+          <span data-lang-block="fr">
+            <span class="hero-line block">Comment Devenir</span>
+            <span class="hero-line l2 block">le <span class="bronze-text">MVP</span></span>
+            <span class="hero-line l3 block text-white/60">Route vers le Bronze.</span>
+          </span>
+          <span data-lang-block="nl">
+            <span class="hero-line block">Hoe Word Je</span>
+            <span class="hero-line l2 block">de <span class="bronze-text">MVP</span></span>
+            <span class="hero-line l3 block text-white/60">Weg naar Brons.</span>
+          </span>
+        </h1>
+
+        <p class="mt-8 max-w-2xl text-lg text-white/75 leading-relaxed hero-sub">
+          <span data-lang-block="en">To start sharing is to start opening yourself to personal evolution. It's choosing to make impact by building. Welcome to the <span class="text-bronze-300 font-semibold">MVP program</span>.</span>
+          <span data-lang-block="fr">Commencer à partager, c'est commencer à s'ouvrir à l'évolution personnelle. C'est vouloir impacter en bâtissant. Bienvenue dans le <span class="text-bronze-300 font-semibold">MVP program</span>.</span>
+          <span data-lang-block="nl">Beginnen met delen is beginnen open te staan voor persoonlijke evolutie. Het is impact willen maken door te bouwen. Welkom in het <span class="text-bronze-300 font-semibold">MVP-programma</span>.</span>
+        </p>
+      </div>
+
+      <!-- BRONZE BADGE -->
+      <div class="lg:col-span-4 flex justify-center lg:justify-end hero-sub">
+        <div class="badge-wrap">
+          <div class="badge-glow"></div>
+          <div class="badge-ring"></div>
+          <div class="badge-ring inner"></div>
+          <div class="badge-star s1"></div>
+          <div class="badge-star s2"></div>
+          <div class="badge-core">
+            <span class="label">BRONZE</span>
+            <span class="sub">RANK · 01</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="mt-20 grid grid-cols-2 md:grid-cols-4 gap-px bg-bronze-500/10 rounded-2xl overflow-hidden glass hero-stats">
+      <div class="bg-ink/60 p-6 float-1">
+        <div class="display text-3xl bronze-text">120h</div>
+        <div class="text-xs text-white/60 mt-2 tracking-wider uppercase"><span data-lang="en">Setup window</span><span data-lang="fr">Fenêtre de setup</span><span data-lang="nl">Setup-venster</span></div>
+      </div>
+      <div class="bg-ink/60 p-6">
+        <div class="display text-3xl bronze-text">05</div>
+        <div class="text-xs text-white/60 mt-2 tracking-wider uppercase"><span data-lang="en">Core actions</span><span data-lang="fr">Actions clés</span><span data-lang="nl">Kernacties</span></div>
+      </div>
+      <div class="bg-ink/60 p-6 float-2">
+        <div class="display text-3xl bronze-text">01</div>
+        <div class="text-xs text-white/60 mt-2 tracking-wider uppercase"><span data-lang="en">Rank · Bronze</span><span data-lang="fr">Rang · Bronze</span><span data-lang="nl">Rang · Brons</span></div>
+      </div>
+      <div class="bg-ink/60 p-6">
+        <div class="display text-3xl bronze-text">∞</div>
+        <div class="text-xs text-white/60 mt-2 tracking-wider uppercase"><span data-lang="en">Duplication</span><span data-lang="fr">Duplication</span><span data-lang="nl">Duplicatie</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<section class="border-y border-bronze-500/15 py-6 overflow-hidden bg-ink/40">
+  <div class="marquee-track flex gap-12 whitespace-nowrap display text-bronze-300/70 text-sm tracking-[0.3em]">
+    <span data-lang-block="en">LIST · INVITE · CONNECT · EDIFY · SCHEDULE · LIST · INVITE · CONNECT · EDIFY · SCHEDULE · LIST · INVITE · CONNECT · EDIFY · SCHEDULE ·</span>
+    <span data-lang-block="fr">LISTER · INVITER · TRANSFÉRER · ÉDIFIER · PLANIFIER · LISTER · INVITER · TRANSFÉRER · ÉDIFIER · PLANIFIER · LISTER · INVITER · TRANSFÉRER · ÉDIFIER · PLANIFIER ·</span>
+    <span data-lang-block="nl">LIJST · UITNODIGEN · OVERDRAGEN · VERHEFFEN · PLANNEN · LIJST · UITNODIGEN · OVERDRAGEN · VERHEFFEN · PLANNEN · LIJST · UITNODIGEN · OVERDRAGEN · VERHEFFEN · PLANNEN ·</span>
+  </div>
+</section>
+
+<!-- WHY -->
+<section id="why" class="relative py-28">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="grid md:grid-cols-12 gap-10 items-start">
+      <div class="md:col-span-5 reveal">
+        <p class="text-xs tracking-[0.3em] text-bronze-300 display">02 · <span data-lang="en">WHY?</span><span data-lang="fr">POURQUOI ?</span><span data-lang="nl">WAAROM?</span></p>
+        <h2 class="display text-4xl md:text-5xl mt-4 leading-tight">
+          <span data-lang-block="en"><span class="bronze-text">Why?</span></span>
+          <span data-lang-block="fr"><span class="bronze-text">Pourquoi ?</span></span>
+          <span data-lang-block="nl"><span class="bronze-text">Waarom?</span></span>
+        </h2>
+      </div>
+      <div class="md:col-span-7 space-y-6 text-white/75 text-lg leading-relaxed reveal reveal-delay-2">
+        <p>
+          <span data-lang-block="en">The digital franchise replaces hustle with architecture. One system. One protocol. Endless replicas. Your job isn't to invent — it's to <span class="text-white font-semibold">execute the blueprint</span>.</span>
+          <span data-lang-block="fr">La franchise digitale remplace le hustle par l'architecture. Un système. Un protocole. Des réplicas à l'infini. Ton job n'est pas d'inventer — c'est <span class="text-white font-semibold">d'exécuter le plan</span>.</span>
+          <span data-lang-block="nl">De digitale franchise vervangt hustle door architectuur. Eén systeem. Eén protocol. Eindeloze kopieën. Jouw taak is niet uitvinden — maar <span class="text-white font-semibold">de blauwdruk uitvoeren</span>.</span>
+        </p>
+        <p>
+          <span data-lang-block="en">Becoming the MVP means proving you can launch. Bronze is the badge. Everything compounds from here.</span>
+          <span data-lang-block="fr">Devenir le MVP, c'est prouver que tu sais lancer. Le Bronze est le badge. Tout se compose à partir d'ici.</span>
+          <span data-lang-block="nl">MVP worden betekent bewijzen dat je kunt lanceren. Brons is de badge. Alles compoundt vanaf hier.</span>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PATH / 5 STEPS -->
+<section id="path" class="relative py-28 bg-gradient-to-b from-transparent via-bronze-900/10 to-transparent">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="flex items-end justify-between flex-wrap gap-6 mb-16 reveal">
+      <div>
+        <p class="text-xs tracking-[0.3em] text-bronze-300 display">03 · <span data-lang="en">HOW?</span><span data-lang="fr">COMMENT ?</span><span data-lang="nl">HOE?</span></p>
+        <h2 class="display text-4xl md:text-5xl mt-4">
+          <span data-lang="en">Five moves to <span class="bronze-text">Bronze</span>.</span>
+          <span data-lang="fr">Cinq coups vers le <span class="bronze-text">Bronze</span>.</span>
+          <span data-lang="nl">Vijf zetten naar <span class="bronze-text">Brons</span>.</span>
+        </h2>
+      </div>
+      <p class="max-w-md text-white/60">
+        <span data-lang="en">No shortcuts. No detours. The sequence is the strategy.</span>
+        <span data-lang="fr">Aucun raccourci. Aucun détour. La séquence est la stratégie.</span>
+        <span data-lang="nl">Geen shortcuts. Geen omwegen. De volgorde is de strategie.</span>
+      </p>
+    </div>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- 1 LANCER -->
+      <div class="glass step-card rounded-2xl p-8 relative overflow-hidden reveal reveal-delay-1">
+        <div class="flex items-center gap-4 mb-5">
+          <div class="num-chip display w-10 h-10 rounded-xl flex items-center justify-center text-sm">01</div>
+          <div class="text-xs tracking-widest text-bronze-300 display"><span data-lang="en">LIST</span><span data-lang="fr">LANCER</span><span data-lang="nl">LIJST</span></div>
+        </div>
+        <h3 class="display text-2xl mb-3"><span data-lang="en">Build your contact list.</span><span data-lang="fr">Fais ta liste de contacts.</span><span data-lang="nl">Bouw je contactenlijst.</span></h3>
+        <p class="text-white/70 leading-relaxed">
+          <span data-lang="en">We want the top 100. Two markets. 7,000 prospects minimum.</span>
+          <span data-lang="fr">On veut le top 100. 2 marchés, 7 000 potentiels minimum.</span>
+          <span data-lang="nl">We willen de top 100. 2 markten, minimaal 7.000 prospects.</span>
+        </p>
+      </div>
+      <!-- 2 INVITER -->
+      <div class="glass step-card rounded-2xl p-8 relative overflow-hidden reveal reveal-delay-2">
+        <div class="flex items-center gap-4 mb-5">
+          <div class="num-chip display w-10 h-10 rounded-xl flex items-center justify-center text-sm">02</div>
+          <div class="text-xs tracking-widest text-bronze-300 display"><span data-lang="en">INVITE</span><span data-lang="fr">INVITER</span><span data-lang="nl">UITNODIGEN</span></div>
+        </div>
+        <h3 class="display text-2xl mb-3"><span data-lang="en">Connect with them.</span><span data-lang="fr">Connecter avec eux.</span><span data-lang="nl">Maak verbinding.</span></h3>
+        <p class="text-white/70 leading-relaxed">
+          <span data-lang="en">The core skill. The must-have of our industry.</span>
+          <span data-lang="fr">La compétence de base. Le must de notre industrie.</span>
+          <span data-lang="nl">De basisvaardigheid. De must van onze branche.</span>
+        </p>
+      </div>
+      <!-- 3 TRANSFERT -->
+      <div class="glass step-card rounded-2xl p-8 relative overflow-hidden reveal reveal-delay-3">
+        <div class="flex items-center gap-4 mb-5">
+          <div class="num-chip display w-10 h-10 rounded-xl flex items-center justify-center text-sm">03</div>
+          <div class="text-xs tracking-widest text-bronze-300 display"><span data-lang="en">TRANSFER</span><span data-lang="fr">TRANSFERT</span><span data-lang="nl">OVERDRAGEN</span></div>
+        </div>
+        <h3 class="display text-2xl mb-3"><span data-lang="en">Create the introduction.</span><span data-lang="fr">Créer la mise en relation.</span><span data-lang="nl">Creëer de introductie.</span></h3>
+        <p class="text-white/70 leading-relaxed">
+          <span data-lang="en">You make the connection between your guest and your upline.</span>
+          <span data-lang="fr">Tu fais la connexion entre ton invité et ta upline.</span>
+          <span data-lang="nl">Jij maakt de connectie tussen je gast en je upline.</span>
+        </p>
+      </div>
+      <!-- 4 EDIFIER -->
+      <div class="glass step-card rounded-2xl p-8 relative overflow-hidden reveal reveal-delay-4">
+        <div class="flex items-center gap-4 mb-5">
+          <div class="num-chip display w-10 h-10 rounded-xl flex items-center justify-center text-sm">04</div>
+          <div class="text-xs tracking-widest text-bronze-300 display"><span data-lang="en">EDIFY</span><span data-lang="fr">ÉDIFIER</span><span data-lang="nl">VERHEFFEN</span></div>
+        </div>
+        <h3 class="display text-2xl mb-3"><span data-lang="en">The decisive assist.</span><span data-lang="fr">La Passe Décisive.</span><span data-lang="nl">De beslissende pass.</span></h3>
+        <p class="text-white/70 leading-relaxed">
+          <span data-lang="en">You build credibility for your opportunity by transferring the trust your guest has in you onto your upline.</span>
+          <span data-lang="fr">Tu vas créer la crédibilité de ton opportunité en transférant la confiance envers ta upline vers ton invité.</span>
+          <span data-lang="nl">Je bouwt geloofwaardigheid voor je opportunity door het vertrouwen in jou over te dragen op je upline.</span>
+        </p>
+      </div>
+      <!-- 5 PLANIFIER -->
+      <div class="bronze-border step-card rounded-2xl p-8 relative overflow-hidden shadow-glow reveal reveal-delay-5 lg:col-span-2">
+        <div class="flex items-center gap-4 mb-5">
+          <div class="num-chip display w-10 h-10 rounded-xl flex items-center justify-center text-sm">05</div>
+          <div class="text-xs tracking-widest text-bronze-300 display"><span data-lang="en">SCHEDULE</span><span data-lang="fr">PLANIFIER</span><span data-lang="nl">PLANNEN</span></div>
+        </div>
+        <h3 class="display text-2xl mb-3"><span data-lang="en">Schedule the presentation.</span><span data-lang="fr">On programme la présentation.</span><span data-lang="nl">Plan de presentatie.</span></h3>
+        <p class="text-white/70 leading-relaxed">
+          <span data-lang="en">You: paper, pen, and soak in exactly how your upline runs it.</span>
+          <span data-lang="fr">Toi : papier, stylo et tu t'imprègnes de comment ta upline fait.</span>
+          <span data-lang="nl">Jij: papier, pen, en je doordringt jezelf van hoe je upline het doet.</span>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRACTICE -->
+<section id="practice" class="relative py-28">
+  <div class="max-w-4xl mx-auto px-6 text-center">
+    <p class="text-xs tracking-[0.3em] text-bronze-300 display reveal">04 · <span data-lang="en">THE PRACTICE</span><span data-lang="fr">LA PRATIQUE</span><span data-lang="nl">DE PRAKTIJK</span></p>
+    <h2 class="display text-4xl md:text-6xl mt-4 leading-[1.05] reveal reveal-delay-1">
+      <span data-lang-block="en">Time to <span class="bronze-text">take action</span><br/>together.</span>
+      <span data-lang-block="fr">C'est l'heure de passer<br/><span class="bronze-text">à l'action ensemble</span>.</span>
+      <span data-lang-block="nl">Tijd om samen<br/><span class="bronze-text">in actie te komen</span>.</span>
+    </h2>
+    <div class="mt-12 inline-flex flex-col md:flex-row items-center gap-6 glass rounded-2xl px-8 py-6 reveal reveal-delay-2">
+      <div class="text-xs tracking-[0.3em] text-bronze-300 display"><span data-lang="en">LAW OF NUMBERS</span><span data-lang="fr">LOI DES NOMBRES</span><span data-lang="nl">WET VAN GETALLEN</span></div>
+      <div class="hidden md:block w-px h-10 bg-bronze-500/30"></div>
+      <div class="flex items-baseline gap-3">
+        <span class="display text-4xl bronze-text">15</span>
+        <span class="text-white/70 text-sm uppercase tracking-widest"><span data-lang="en">presentations</span><span data-lang="fr">présentations</span><span data-lang="nl">presentaties</span></span>
+        <span class="text-bronze-300 display text-2xl">→</span>
+        <span class="display text-4xl bronze-text">04</span>
+        <span class="text-white/70 text-sm uppercase tracking-widest"><span data-lang="en">launches</span><span data-lang="fr">lancements</span><span data-lang="nl">lanceringen</span></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SPEED -->
+<section id="speed" class="relative py-28">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="grid lg:grid-cols-2 gap-12 items-center">
+      <div class="reveal">
+        <p class="text-xs tracking-[0.3em] text-bronze-300 display">05 · <span data-lang="en">SPEED</span><span data-lang="fr">VITESSE</span><span data-lang="nl">SNELHEID</span></p>
+        <h2 class="display text-4xl md:text-6xl mt-4 leading-[1]">
+          <span data-lang-block="en"><span class="bronze-text">Success</span><br/>Loves Speed.</span>
+          <span data-lang-block="fr">Le <span class="bronze-text">Succès</span><br/>Aime la Vitesse.</span>
+          <span data-lang-block="nl"><span class="bronze-text">Succes</span><br/>Houdt van Snelheid.</span>
+        </h2>
+        <div class="mt-8 space-y-4">
+          <div class="glass rounded-2xl p-5 flex items-start gap-4">
+            <div class="num-chip display w-9 h-9 rounded-lg flex items-center justify-center text-xs shrink-0">🎯</div>
+            <div>
+              <div class="display text-bronze-300 text-xs tracking-widest mb-1"><span data-lang="en">GOAL</span><span data-lang="fr">OBJECTIF</span><span data-lang="nl">DOEL</span></div>
+              <div class="text-lg text-white"><span data-lang="en">Hit Bronze in 4 days · 120 hours.</span><span data-lang="fr">Hit ton Bronze en 4 jours · 120 heures.</span><span data-lang="nl">Bereik Brons in 4 dagen · 120 uur.</span></div>
+            </div>
+          </div>
+          <div class="bronze-border rounded-2xl p-5 flex items-start gap-4">
+            <div class="num-chip display w-9 h-9 rounded-lg flex items-center justify-center text-xs shrink-0">⚡</div>
+            <div>
+              <div class="display text-bronze-300 text-xs tracking-widest mb-1"><span data-lang="en">CHALLENGE</span><span data-lang="fr">CHALLENGE</span><span data-lang="nl">CHALLENGE</span></div>
+              <div class="text-lg text-white"><span data-lang="en">24h to create 15 introductions.</span><span data-lang="fr">24h pour créer 15 mises en relation.</span><span data-lang="nl">24u om 15 introducties te creëren.</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SPEED VISUAL -->
+      <div class="reveal reveal-delay-2">
+        <div class="speed-stage glass">
+          <div class="speed-line" style="top:18%; animation-delay:0s;"></div>
+          <div class="speed-line" style="top:30%; animation-delay:.2s; opacity:.4;"></div>
+          <div class="speed-line" style="top:42%; animation-delay:.4s;"></div>
+          <div class="speed-line" style="top:55%; animation-delay:.1s; opacity:.5;"></div>
+          <div class="speed-line" style="top:68%; animation-delay:.3s;"></div>
+          <div class="speed-line" style="top:80%; animation-delay:.5s; opacity:.4;"></div>
+          <div class="speed-meter">
+            <div class="ring2"></div>
+          </div>
+          <div class="absolute inset-0 flex flex-col items-center justify-center">
+            <div class="speed-num">120h</div>
+            <div class="text-xs tracking-[0.4em] text-bronze-300 display mt-1">VELOCITY</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BRONZE BLOCK -->
+<section id="bronze" class="relative py-32 overflow-hidden">
+  <div class="liquid-stage">
+    <div class="liquid-conic" style="opacity:.35"></div>
+    <div class="liquid-sheen"></div>
+    <div class="liquid-vignette"></div>
+  </div>
+  <div class="relative max-w-4xl mx-auto px-6 text-center">
+
+    <div class="glass rounded-2xl p-8 mb-12 reveal">
+      <p class="display text-xl md:text-2xl leading-relaxed text-white/90">
+        <span data-lang-block="en">"Bronze isn't a freebie — it's the start of a <span class="bronze-text">new environment</span>, new standards, new perspectives and opportunities."</span>
+        <span data-lang-block="fr">« Le Bronze n'est pas une gratuité, c'est le début d'<span class="bronze-text">un autre environnement</span>, de nouveaux standards, de nouvelles perspectives et opportunités. »</span>
+        <span data-lang-block="nl">"Brons is geen gratis prijs — het is het begin van een <span class="bronze-text">nieuwe omgeving</span>, nieuwe standaarden, nieuwe perspectieven en kansen."</span>
+      </p>
+    </div>
+
+    <div class="inline-flex items-center gap-2 glass rounded-full px-4 py-1.5 mb-8 reveal">
+      <span class="pulse-dot w-2 h-2 rounded-full bg-bronze-300"></span>
+      <span class="text-xs tracking-widest display text-bronze-300"><span data-lang="en">RANK STATUS · LOCKING</span><span data-lang="fr">STATUT DU RANG · VERROUILLAGE</span><span data-lang="nl">RANGSTATUS · VERGRENDELEN</span></span>
+    </div>
+    <h2 class="display text-5xl md:text-7xl leading-[0.95] reveal reveal-delay-1">
+      <span data-lang-block="en">Your <span class="bronze-text">MVP badge</span><br/>is 120 hours away.</span>
+      <span data-lang-block="fr">Ton <span class="bronze-text">badge MVP</span><br/>est à 120 heures.</span>
+      <span data-lang-block="nl">Je <span class="bronze-text">MVP-badge</span><br/>is 120 uur verwijderd.</span>
+    </h2>
+    <p class="mt-6 text-lg text-white/70 max-w-xl mx-auto reveal reveal-delay-2">
+      <span data-lang="en">List. Invite. Transfer. Edify. Schedule. Step inside the digital franchise — the protocol does the rest.</span>
+      <span data-lang="fr">Lister. Inviter. Transférer. Édifier. Planifier. Entre dans la franchise digitale — le protocole fait le reste.</span>
+      <span data-lang="nl">Lijst. Uitnodigen. Overdragen. Verheffen. Plannen. Stap in de digitale franchise — het protocol doet de rest.</span>
+    </p>
+    <p class="mt-12 text-xs text-white/40 tracking-widest display reveal reveal-delay-3"><span data-lang="en">NEXT CHAPTER · 02 · BRONZE → GOLD</span><span data-lang="fr">PROCHAIN CHAPITRE · 02 · BRONZE → OR</span><span data-lang="nl">VOLGEND HOOFDSTUK · 02 · BRONS → GOUD</span></p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="border-t border-bronze-500/15 py-10">
+  <div class="max-w-6xl mx-auto px-6 flex flex-wrap items-center justify-between gap-4 text-xs text-white/40">
+    <div class="display tracking-widest">MVP<span class="text-bronze-300">.01</span> · 2026</div>
+    <div>
+      <span data-lang="en">A simple system for an inevitable rank.</span>
+      <span data-lang="fr">Un système simple pour un rang inévitable.</span>
+      <span data-lang="nl">Een eenvoudig systeem voor een onvermijdelijke rang.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  function setLang(lang){
+    document.documentElement.lang = lang;
+    ['en','fr','nl'].forEach(l=>{
+      const b = document.getElementById('btn-'+l);
+      if(!b) return;
+      const active = 'bg-bronze-500/30 text-white';
+      const idle = 'text-white/60 hover:text-white';
+      b.className = 'px-3 py-1 rounded-full cursor-pointer transition ring-bronze ' + (lang===l?active:idle);
+    });
+    try { localStorage.setItem('lang', lang); } catch(e){}
+  }
+  setLang((()=>{ try { return localStorage.getItem('lang') || 'fr'; } catch(e) { return 'fr'; }})());
+
+  // Neural network canvas
+  (function neural(){
+    const canvas = document.getElementById('neural');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    let W=0, H=0, DPR=Math.min(window.devicePixelRatio||1, 2);
+    let nodes = [], pulses = [];
+    const CONNECT_DIST = 160;
+
+    function resize(){
+      const r = canvas.getBoundingClientRect();
+      W = r.width; H = r.height;
+      canvas.width = W * DPR; canvas.height = H * DPR;
+      ctx.setTransform(DPR,0,0,DPR,0,0);
+      buildNodes();
+    }
+
+    function buildNodes(){
+      const density = Math.max(30, Math.floor((W*H)/22000));
+      nodes = [];
+      for (let i=0; i<density; i++){
+        nodes.push({
+          x: Math.random()*W,
+          y: Math.random()*H,
+          vx: (Math.random()-0.5)*0.18,
+          vy: (Math.random()-0.5)*0.18,
+          r: 1.4 + Math.random()*1.6,
+          phase: Math.random()*Math.PI*2,
+        });
+      }
+    }
+
+    function spawnPulse(){
+      if (nodes.length < 2) return;
+      // pick a random edge that exists this frame
+      const a = nodes[Math.floor(Math.random()*nodes.length)];
+      // find a nearby node
+      const candidates = [];
+      for (const b of nodes){
+        if (b===a) continue;
+        const dx=b.x-a.x, dy=b.y-a.y;
+        const d=Math.hypot(dx,dy);
+        if (d < CONNECT_DIST) candidates.push(b);
+      }
+      if (!candidates.length) return;
+      const b = candidates[Math.floor(Math.random()*candidates.length)];
+      pulses.push({ a, b, t: 0, speed: 0.012 + Math.random()*0.018 });
+    }
+
+    let lastSpawn = 0;
+    function tick(now){
+      ctx.clearRect(0,0,W,H);
+
+      // update + draw connections
+      ctx.lineWidth = 1;
+      for (let i=0; i<nodes.length; i++){
+        const n = nodes[i];
+        n.x += n.vx; n.y += n.vy;
+        if (n.x < 0 || n.x > W) n.vx *= -1;
+        if (n.y < 0 || n.y > H) n.vy *= -1;
+        for (let j=i+1; j<nodes.length; j++){
+          const m = nodes[j];
+          const dx = m.x-n.x, dy = m.y-n.y;
+          const d = Math.hypot(dx,dy);
+          if (d < CONNECT_DIST){
+            const a = (1 - d/CONNECT_DIST) * 0.35;
+            ctx.strokeStyle = `rgba(224,168,100,${a.toFixed(3)})`;
+            ctx.beginPath(); ctx.moveTo(n.x,n.y); ctx.lineTo(m.x,m.y); ctx.stroke();
+          }
+        }
+      }
+
+      // draw nodes with subtle pulse glow
+      for (const n of nodes){
+        n.phase += 0.02;
+        const pulse = 0.7 + Math.sin(n.phase)*0.3;
+        ctx.beginPath();
+        const grad = ctx.createRadialGradient(n.x,n.y,0, n.x,n.y, n.r*6);
+        grad.addColorStop(0, `rgba(246,216,181,${0.9*pulse})`);
+        grad.addColorStop(0.4, `rgba(224,168,100,${0.4*pulse})`);
+        grad.addColorStop(1, 'rgba(184,115,51,0)');
+        ctx.fillStyle = grad;
+        ctx.arc(n.x,n.y, n.r*6, 0, Math.PI*2);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.fillStyle = `rgba(246,216,181,${0.95*pulse})`;
+        ctx.arc(n.x,n.y, n.r, 0, Math.PI*2);
+        ctx.fill();
+      }
+
+      // spawn pulses periodically
+      if (now - lastSpawn > 220){
+        spawnPulse();
+        lastSpawn = now;
+      }
+
+      // draw + advance pulses
+      for (let i=pulses.length-1; i>=0; i--){
+        const p = pulses[i];
+        p.t += p.speed;
+        if (p.t >= 1){ pulses.splice(i,1); continue; }
+        const x = p.a.x + (p.b.x - p.a.x)*p.t;
+        const y = p.a.y + (p.b.y - p.a.y)*p.t;
+        // glow
+        const g = ctx.createRadialGradient(x,y,0, x,y,18);
+        g.addColorStop(0, 'rgba(246,216,181,0.95)');
+        g.addColorStop(0.4, 'rgba(242,199,106,0.5)');
+        g.addColorStop(1, 'rgba(184,115,51,0)');
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(x,y,18,0,Math.PI*2); ctx.fill();
+        // core
+        ctx.fillStyle = '#FFF6E6';
+        ctx.beginPath(); ctx.arc(x,y,2,0,Math.PI*2); ctx.fill();
+      }
+
+      if (!reduceMotion) requestAnimationFrame(tick);
+    }
+
+    resize();
+    window.addEventListener('resize', ()=>{ DPR=Math.min(window.devicePixelRatio||1, 2); resize(); });
+    if (reduceMotion){ tick(0); } else { requestAnimationFrame(tick); }
+  })();
+
+  // Site-wide ambient neural (subtle, fixed)
+  (function siteNeural(){
+    const canvas = document.getElementById('site-neural');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    let W=0, H=0, DPR=Math.min(window.devicePixelRatio||1, 2);
+    let nodes = [];
+    const CONNECT_DIST = 180;
+
+    function resize(){
+      W = window.innerWidth; H = window.innerHeight;
+      canvas.width = W * DPR; canvas.height = H * DPR;
+      ctx.setTransform(DPR,0,0,DPR,0,0);
+      const density = Math.max(20, Math.floor((W*H)/40000));
+      nodes = [];
+      for (let i=0; i<density; i++){
+        nodes.push({
+          x: Math.random()*W,
+          y: Math.random()*H,
+          vx: (Math.random()-0.5)*0.08,
+          vy: (Math.random()-0.5)*0.08,
+          r: 1 + Math.random()*1.2,
+        });
+      }
+    }
+
+    function tick(){
+      ctx.clearRect(0,0,W,H);
+      for (let i=0; i<nodes.length; i++){
+        const n = nodes[i];
+        n.x += n.vx; n.y += n.vy;
+        if (n.x < 0 || n.x > W) n.vx *= -1;
+        if (n.y < 0 || n.y > H) n.vy *= -1;
+        for (let j=i+1; j<nodes.length; j++){
+          const m = nodes[j];
+          const dx = m.x-n.x, dy = m.y-n.y;
+          const d = Math.hypot(dx,dy);
+          if (d < CONNECT_DIST){
+            const a = (1 - d/CONNECT_DIST) * 0.18;
+            ctx.strokeStyle = `rgba(224,168,100,${a.toFixed(3)})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(n.x,n.y); ctx.lineTo(m.x,m.y); ctx.stroke();
+          }
+        }
+      }
+      for (const n of nodes){
+        ctx.fillStyle = 'rgba(246,216,181,0.55)';
+        ctx.beginPath(); ctx.arc(n.x,n.y, n.r, 0, Math.PI*2); ctx.fill();
+      }
+      if (!reduceMotion) requestAnimationFrame(tick);
+    }
+
+    resize();
+    window.addEventListener('resize', ()=>{ DPR=Math.min(window.devicePixelRatio||1, 2); resize(); });
+    if (reduceMotion){ tick(); } else { requestAnimationFrame(tick); }
+  })();
+
+  // Scroll reveal
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }});
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
